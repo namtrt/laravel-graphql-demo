@@ -1,0 +1,102 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type Query {
+    "Get all User with paginator"
+    user(
+        whereEmail: String,
+        id: Int
+    ): UserPaginator!
+
+    "Show user detail by id"
+    userDetail(id: Int!): User!
+
+    "Show all post"
+    post: [Post!]
+
+    "Show all category"
+    category: [Category!]
+}
+
+type Mutation {
+    createUser(
+        name: String! @rules(apply: ["min:1"])
+        email: String! @rules(apply: ["email"])
+        password: String! @rules(apply: ["min:6"])
+    ): User
+
+    updateUser(
+        id: ID!
+        email: String @rules(apply: ["email"])
+        name: String @rules(apply: ["min:1"])
+    ): User
+
+    deleteUser(id: ID!): User
+
+    createCategory(
+        name: String! @rules(apply: ["min:1"])
+        description: String
+    ): Category
+
+    updateCategory(
+        id: ID!
+        name: String @rules(apply: ["min:1"])
+        description: String
+    ): Category
+
+    deleteCategory(id: ID!): Category
+
+    createPost(
+        user_id: Int!
+        category_id: Int!
+        title: String! @rules(apply: ["min:1"])
+        description: String
+        content: String
+    ): Post
+
+    updatePost(
+        id: ID!
+        title: String! @rules(apply: ["min:1"])
+        description: String
+        content: String
+    ): Post
+
+    deletePost(id: ID!): Post
+}
+
+type UserPaginator {
+    data: [User!]
+    current_page: Int!
+    total: Int!
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    posts: [Post!] @hasMany
+    email_verified_at: DateTime
+    created_at: DateTime
+    updated_at: DateTime
+}
+
+type Category {
+    id: ID!
+    name: String!
+    description: String
+    posts: [Post!] @hasMany
+    created_at: DateTime
+    updated_at: DateTime
+}
+
+type Post {
+    id: ID!
+    category: Category! @belongsTo
+    user: User! @belongsTo
+    title: String!
+    description: String
+    Content: String
+    created_at: DateTime
+    updated_at: DateTime
+}
+
